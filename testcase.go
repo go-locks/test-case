@@ -105,6 +105,7 @@ func RunRLockTest(d driver.IRWDriver, t *testing.T) {
 	for i := 0; i < 50; i++ {
 		d.RUnlock(name, other)
 	}
+	d.RTouch(name, value, expiry)
 	ok3, _ := d.WLock(name, value, expiry)
 	for i := 0; i < 50; i++ {
 		d.RUnlock(name, value)
