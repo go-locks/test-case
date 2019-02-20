@@ -9,7 +9,7 @@ import (
 	"github.com/go-locks/distlock/driver"
 )
 
-var expiry = time.Second * 3
+var expiry = time.Second * 5
 
 func RunLockTest(d driver.IDriver, t *testing.T) {
 	var counter int32
@@ -92,6 +92,8 @@ func RunRLockTest(d driver.IRWDriver, t *testing.T) {
 		t.Errorf("unexpected result, expect = 50, but = %d", counter)
 	}
 
+	d.RTouch(name, value, expiry)
+
 	/* write is mutually exclusive with read,
 	 * no read lock can enter in after write lock if even it is failed */
 	ok1, _ := d.WLock(name, value, expiry)
@@ -105,7 +107,9 @@ func RunRLockTest(d driver.IRWDriver, t *testing.T) {
 	for i := 0; i < 50; i++ {
 		d.RUnlock(name, other)
 	}
+
 	d.RTouch(name, value, expiry)
+	
 	ok3, _ := d.WLock(name, value, expiry)
 	for i := 0; i < 50; i++ {
 		d.RUnlock(name, value)
